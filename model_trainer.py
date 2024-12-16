@@ -3,7 +3,6 @@ import pandas as pd
 import tensorflow as tf
 from scikeras.wrappers import KerasRegressor
 from sklearn.model_selection import GridSearchCV
-import keras
 from tensorflow.keras.callbacks import EarlyStopping # type:ignore
 import numpy as np
 import warnings
@@ -14,10 +13,11 @@ import mlflow.sklearn
 import bentoml
 
 import logging
-
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+import dagshub
+dagshub.init(repo_owner='Md-hasan-1', repo_name='Ann-Regression', mlflow=True)
 
 class model_trainer_config:
     def initiate_training(self) -> None:
@@ -37,6 +37,12 @@ class model_trainer_config:
             train_data.drop("11", axis=1), train_data["11"], 
             test_data.drop("11", axis=1), test_data["11"]
         )
+
+        X_train = np.array(X_train).astype(np.float32)
+        X_test = np.array(X_test).astype(np.float32)
+        y_train = np.array(y_train).astype(np.float32)
+        y_test = np.array(y_test).astype(np.float32)
+
         
         # function that creates model 
         def create_model(neurons, layers):
@@ -57,19 +63,14 @@ class model_trainer_config:
             return model
 
         # parameters of ann regressor 
-        # params = {
-        #     "neurons" : [16, 32, 64, 120],
-        #     "layers" : [1, 2, 5],
-        #     "epochs" : [50, 100]
-        # }
         params = {
-            "neurons" : [16],
-            "layers" : [1],
-            "epochs" : [10]
+            "neurons" : [16, 32, 64, 120],
+            "layers" : [1, 2, 5],
+            "epochs" : [50, 100]
         }
 
         with mlflow.start_run():
-            trail_model = KerasRegressor(neurons=32, layers=1, build_fn=create_model,epochs=50, verbose=1)
+            trail_model = KerasRegressor(model=create_model, neurons=32, layers=1,epochs=50, verbose=1)
 
             grid = GridSearchCV(trail_model, params, n_jobs=-1, cv=3,verbose=1)
 
@@ -100,13 +101,13 @@ class model_trainer_config:
                 epochs=grid.best_params_["epochs"]
             )
             mlflow.log_params(mlflow_tracking_params_dict)
-            mlflow.log_metric("r2_score", grid.best_score_)
+            mlflow.log_metric("mae", grid.best_score_)
             
             predictions = model.predict(X_train)
             signature = infer_signature(X_train, predictions)
 
             # For Remote server only(DAGShub)
-            remote_server_uri="https://github.com/Md-hasan-1/Ann-Regression.git"
+            remote_server_uri="https://dagshub.com/Md-hasan-1/Ann-Regression.mlflow"
             mlflow.set_tracking_uri(remote_server_uri)
             
             tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
@@ -117,12 +118,12 @@ class model_trainer_config:
                 # There are other ways to use the Model Registry, which depends on the use case,
                 # please refer to the doc for more information:
                 # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-                mlflow.sklearn.log_model(
-                   model, "KerasRegressor", registered_model_name="KerasRegressor",
+                mlflow.keras.log_model(
+                   model.model_, "KerasRegressor", registered_model_name="KerasRegressor",
                    signature=signature
                 )
             else:
-                mlflow.sklearn.log_model(model, "kerasregressor", signature=signature)
+                mlflow.keras.log_model(model.model_, "kerasregressor", signature=signature)
 
             # saving model into dir
             bentoml.keras.save_model("kerasregressor", model.model_)

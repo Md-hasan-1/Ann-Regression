@@ -1,9 +1,9 @@
 import streamlit as st
 from prediction import Pred
 from data_transformation import data_transformation_config
+from model_trainer import model_trainer_config
 import pickle
 import bentoml
-from model_trainer import model_trainer_config
 
 # Load the trained model
 model = bentoml.keras.get("kerasregressor:latest").to_runner()
@@ -34,11 +34,3 @@ prediction_proba = prediction.predict(model, preprocessor, geography, gender, ag
                 is_active_member)
 
 st.write(f'Predicted Salary: {prediction_proba:.2f}')
-
-
-if __name__=="__main__":
-    dt = data_transformation_config()
-    dt.initiate_transformation()
-    mt = model_trainer_config()
-    mt.initiate_training()
-    print("Tast completed!!")

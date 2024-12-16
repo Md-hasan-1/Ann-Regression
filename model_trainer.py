@@ -105,9 +105,9 @@ class model_trainer_config:
             predictions = model.predict(X_train)
             signature = infer_signature(X_train, predictions)
 
-            # # For Remote server only(DAGShub)
-            # remote_server_uri=""
-            # mlflow.set_tracking_uri(remote_server_uri)
+            # For Remote server only(DAGShub)
+            remote_server_uri="https://github.com/Md-hasan-1/Ann-Regression.git"
+            mlflow.set_tracking_uri(remote_server_uri)
             
             tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 

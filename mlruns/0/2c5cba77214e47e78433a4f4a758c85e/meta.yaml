@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/hasan/Documents/DS/Udemy/MlFLOW%2C%20Dagshub%2C%20bentoml/mlruns/0/2c5cba77214e47e78433a4f4a758c85e/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2c5cba77214e47e78433a4f4a758c85e
+run_name: resilient-cat-280
+run_uuid: 2c5cba77214e47e78433a4f4a758c85e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1734340126869
+status: 1
+tags: []
+user_id: hasan

@@ -126,8 +126,3 @@ class model_trainer_config:
 
             # saving model into dir
             bentoml.keras.save_model("kerasregressor", model.model_)
-
-
-if __name__=="__main__":
-    mt = model_trainer_config()
-    mt.initiate_training()

@@ -90,8 +90,3 @@ class data_transformation_config:
         # saving transformed train and test data
         pd.DataFrame(train_data).to_csv(self.train_data_path, index=False)
         pd.DataFrame(test_data).to_csv(self.test_data_path, index=False)
-
-if __name__=="__main__":
-    dt = data_transformation_config()
-    dt.initiate_transformation()
-    

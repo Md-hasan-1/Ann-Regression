@@ -1,0 +1,12 @@
+service: "service:svc"
+labels:
+  owner: "Hasan Raza"
+  project: "salary_prediction"
+include:
+  - "*.py"
+  - "requirements.txt"  # Ensure this is included so BentoML can find it
+exclude:
+  - "venv/*"
+  - "*.log"
+python:
+  requirements_txt: "requirements.txt"  # Use your requirements.txt here

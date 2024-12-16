@@ -1,0 +1,15 @@
+tensorflow
+mlflow
+bentoml
+tensorboard
+pandas
+ipykernel
+flask
+memory_profiler
+numpy
+scikeras
+matplotlib
+scikit-learn
+seaborn
+streamlit
+dvc
